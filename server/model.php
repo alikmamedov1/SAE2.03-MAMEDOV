@@ -13,10 +13,10 @@
  * DBLOGIN : Nom d'utilisateur pour se connecter à la base de données.
  * DBPWD : Mot de passe pour se connecter à la base de données.
  */
-define("HOST", "localhost");
-define("DBNAME", "morap01");
-define("DBLOGIN", "morap01");
-define("DBPWD", "morap01");
+define("HOST", "mamedov1");
+define("DBNAME", "mamedov1");
+define("DBLOGIN", "mamedov1");
+define("DBPWD", "mamedov1");
 
 
 function getAllMovies(){
