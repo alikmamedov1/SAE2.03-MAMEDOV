@@ -1,0 +1,26 @@
+<div class="movie-form">
+    <h2># Ajouter ou modifier un film</h2>
+    <form id="movieForm">
+        <div class="form-row">
+            <input type="text" id="name" placeholder="Saisir une titre" required>
+            <input type="text" id="director" placeholder="Saisir un Réalisateur" required>
+            <input type="date" id="year" required>
+        </div>
+        <div class="form-row">
+            <textarea id="description" placeholder="Saisir une description"></textarea>
+            <input type="text" id="trailer" placeholder="Saisir un url trailer">
+            <input type="number" id="min_age" placeholder="Saisir un âge">
+            <input type="text" id="image" placeholder="nom_image.jpg">
+        </div>
+        <div class="form-row">
+            <select id="id_category">
+                <option value="1">Action</option>
+                <option value="2">Comédie</option>
+                <option value="3">Drame</option>
+                <option value="4">Animation</option>
+                <option value="5">Thriller</option>
+            </select>
+            <button type="submit">Update</button>
+        </div>
+    </form>
+</div>

@@ -5,24 +5,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./css/base.css" />
-  </head>
+    </head>
   <body>
     <section id="log"></section>
+    
+    <section id="form-container"></section>
 
     <script type="module">
       import { Log } from "./component/Log/script.js";
+      import { MovieForm } from "./component/MovieForm/script.js";
+      import { DataMovie } from "./data/dataMovie.js";
 
       window.C = {};
+      window.V = {};
 
       C.start = function () {
         V.renderLog("Démarrage de l'application");
+        V.renderForm();
       };
 
-      window.V = {};
+      // Эта функция соберет данные и отправит их на сервер
+      C.handlerAddMovie = async function (event) {
+        event.preventDefault(); // Чтобы страница не перезагружалась
+        
+        let formData = {
+            name: document.querySelector("#name").value,
+            director: document.querySelector("#director").value,
+            year: document.querySelector("#year").value,
+            description: document.querySelector("#description").value,
+            image: document.querySelector("#image").value,
+            trailer: document.querySelector("#trailer").value,
+            min_age: document.querySelector("#min_age").value,
+            id_category: document.querySelector("#id_category").value
+        };
+
+        V.renderLog("Envoi du film : " + formData.name);
+        
+        try {
+            let result = await DataMovie.add(formData);
+            V.renderLog("Réponse serveur : " + result.message);
+        } catch (error) {
+            V.renderLog("Erreur lors de l'envoi !");
+        }
+      };
 
       V.renderLog = function (txt) {
         let content = document.querySelector("#log");
         content.innerHTML = Log.format(txt);
+      };
+
+      V.renderForm = function () {
+        let content = document.querySelector("#form-container");
+        content.innerHTML = MovieForm.format();
+        // Привязываем обработчик к кнопке формы
+        document.querySelector("#movieForm").onsubmit = C.handlerAddMovie;
       };
 
       C.start();

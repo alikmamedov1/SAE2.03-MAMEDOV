@@ -16,8 +16,8 @@ Movie.format = function (movies) {
 
     movies.forEach(movie => {
         let card = template;
-        card = card.replace(/{{title}}/g, movie.title);
-        card = card.replace("{{poster}}", movie.poster);
+        card = card.replace(/{{title}}/g, movie.name);
+        card = card.replace("{{poster}}", "../server/images/" + movie.image);
         card = card.replace("{{year}}", movie.year || "");
         card = card.replace("{{description}}", movie.description);
         card = card.replace("{{director}}", movie.director);

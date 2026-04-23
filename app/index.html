@@ -1,71 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <title>SAE2.03 APP</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./component/Movie/style.css" />
     <link rel="stylesheet" href="./css/base.css" />
-    </head>
+    
+</head>
 
-  <body>
+<body>
     <header id="header"></header>
-
     <section id="content"></section>
 
     <script type="module">
-      import { NavBar } from "./component/NavBar/script.js";
-      import { Movie } from "./component/Movie/script.js";
+        import { NavBar } from "./component/NavBar/script.js";
+        import { Movie } from "./component/Movie/script.js";
+        import { DataMovie } from "./data/dataMovie.js";
 
-      // --- CONTROLEUR --- //
-      window.C = {};
+        window.C = {};
 
-      C.handlerAbout = function () {
-        alert(
-          "Ceci est une base de projet pour la SAE2.03 édition 2025. Bonne chance !"
-        );
-      };
+        C.handlerAbout = function () {
+            alert("Ceci est une base de projet pour la SAE2.03 édition 2026. Bonne chance !");
+        };
 
-      C.start = function () {
-    
-        V.renderNavBar("C.handlerAbout()");
 
-        const testData = [
-          {
-            title: "Interstellar",
-            year: "2014",
-            poster: "../server/images/interstellar.jpg",
-            description: "Un groupe d'explorateurs voyage à travers un trou de ver pour sauver l'humanité.",
-            director: "Christopher Nolan",
-            trailer: "https://www.youtube.com/embed/VaOijhK3CRU?si=76Ke4uw4LYjuLuQ6"
-          },
-          {
-            title: "La Liste de Schindler",
-            year: "1993",
-            poster: "../server/images/schindler.webp",
-            description: "Un industriel allemand sauve des milliers de Juifs pendant l'Holocauste.",
-            director: "Steven Spielberg",
-            trailer: "https://www.youtube.com/embed/ONWtyxzl-GE?si=xC3ASGGPy5Ib-aPn"
-          }
-        ];
+        C.getMovie = async function() {
+            let data = await DataMovie.requestMovies(); 
+            V.renderMovie(data);
+            console.log(data)
+        };
 
-        V.renderMovies(testData);
-      };
+        C.start = function () {
+            V.renderNavBar("C.handlerAbout()");
+            C.getMovie(); 
+        };
 
-      // --- VUE --- //
-      window.V = {};
+       
+        window.V = {};
 
-      V.renderNavBar = function (hAbout) {
-        let header = document.querySelector("#header");
-        header.innerHTML = NavBar.format(hAbout);
-      };
+        V.renderNavBar = function (hAbout) {
+            let header = document.querySelector("#header");
+            header.innerHTML = NavBar.format(hAbout);
+        };
 
-      V.renderMovies = function (movies) {
-        let content = document.querySelector("#content");
-        content.innerHTML = Movie.format(movies);
-      };
+        V.renderMovie = function (allmovie) {
+            let content = document.querySelector("#content");
+            
+            content.innerHTML = Movie.format(allmovie); 
+        };
 
-      C.start();
+        
+        C.start();
     </script>
-  </body>
+</body>
 </html>
