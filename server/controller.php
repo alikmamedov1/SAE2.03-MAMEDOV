@@ -26,12 +26,24 @@ function readMoviesController(){
     return $movies;
 }
 
-function addMovieController($params){
-    $res = addMovie($params);
+function addMovieController(){
+    // Собираем данные из запроса
+    $name = $_REQUEST['name'];
+    $director = $_REQUEST['director'];
+    $year = $_REQUEST['year'];
+    $length = $_REQUEST['length'];
+    $description = $_REQUEST['description'];
+    $image = $_REQUEST['image'];
+    $trailer = $_REQUEST['trailer'];
+    $min_age = $_REQUEST['min_age'];
+    $id_category = $_REQUEST['id_category'];
+
+    // Передаем их в модель именно в таком порядке
+    $res = addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category);
     
     if ($res) {
-        return ["message" => "Film ajouté !"];
+        return ["message" => "Le film a été ajouté avec succès"];
     } else {
-        return false; 
+        return ["message" => "Erreur lors de l'ajout"]; 
     }
 }
