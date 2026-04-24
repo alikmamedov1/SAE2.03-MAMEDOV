@@ -25,3 +25,13 @@ function readMoviesController(){
     $movies = getAllMovies();
     return $movies;
 }
+
+function addMovieController($params){
+    $res = addMovie($params);
+    
+    if ($res) {
+        return ["message" => "Film ajouté !"];
+    } else {
+        return false; 
+    }
+}

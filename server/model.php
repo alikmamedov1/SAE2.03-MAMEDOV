@@ -24,4 +24,28 @@ function getAllMovies(){
         return false;
     }
 }
+
+function addMovie($p){
+    $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+    
+    // Просто перечисляем поля и значения через двоеточие
+    $sql = "INSERT INTO Movie (name, director, year, description, image, trailer, min_age, id_category) 
+            VALUES (:name, :director, :year, :description, :image, :trailer, :min_age, :id_category)";
+    
+    $stmt = $cnx->prepare($sql);
+    $res = $stmt->execute([
+        ':name' => $p['name'],
+        ':director' => $p['director'],
+        ':year' => $p['year'],
+        ':length'      => $p['length'],
+        ':description' => $p['description'],
+        ':image' => $p['image'],
+        ':trailer' => $p['trailer'],
+        ':min_age' => $p['min_age'],
+        ':id_category' => $p['id_category']
+    ]);
+    
+    return $res; // вернет true или false
+}
+
 ?>

@@ -1,67 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <title>SAE2.03 ADMIN</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./css/base.css" />
-    </head>
-  <body>
-    <section id="log"></section>
-    
-    <section id="form-container"></section>
 
-    <script type="module">
-      import { Log } from "./component/Log/script.js";
-      import { MovieForm } from "./component/MovieForm/script.js";
-      import { DataMovie } from "./data/dataMovie.js";
+<head>
+  <title>SAE2.03 ADMIN</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/base.css" />
+</head>
 
-      window.C = {};
-      window.V = {};
+<body>
+  <section id="log"></section>
 
-      C.start = function () {
-        V.renderLog("Démarrage de l'application");
-        V.renderForm();
-      };
+  <section id="form-container"></section>
 
-      // Эта функция соберет данные и отправит их на сервер
-      C.handlerAddMovie = async function (event) {
-        event.preventDefault(); // Чтобы страница не перезагружалась
-        
-        let formData = {
-            name: document.querySelector("#name").value,
-            director: document.querySelector("#director").value,
-            year: document.querySelector("#year").value,
-            description: document.querySelector("#description").value,
-            image: document.querySelector("#image").value,
-            trailer: document.querySelector("#trailer").value,
-            min_age: document.querySelector("#min_age").value,
-            id_category: document.querySelector("#id_category").value
-        };
+  <script type="module">
+    import { Log } from "./component/Log/script.js";
+    import { MovieForm } from "./component/MovieForm/script.js";
+    import { DataMovie } from "./data/dataMovie.js";
 
-        V.renderLog("Envoi du film : " + formData.name);
-        
-        try {
-            let result = await DataMovie.add(formData);
-            V.renderLog("Réponse serveur : " + result.message);
-        } catch (error) {
-            V.renderLog("Erreur lors de l'envoi !");
-        }
-      };
+    window.C = {};
+    window.V = {};
 
-      V.renderLog = function (txt) {
-        let content = document.querySelector("#log");
-        content.innerHTML = Log.format(txt);
-      };
+    C.start = function () {
+      V.renderLog("Démarrage de l'application");
+      V.renderForm();
+    };
 
-      V.renderForm = function () {
-        let content = document.querySelector("#form-container");
+    V.renderLog = function (txt) {
+      let content = document.querySelector("#log");
+      if (content) content.innerHTML = Log.format(txt);
+    };
+
+    V.renderForm = function () {
+      let content = document.querySelector("#form-container");
+      if (content) {
         content.innerHTML = MovieForm.format();
-        // Привязываем обработчик к кнопке формы
-        document.querySelector("#movieForm").onsubmit = C.handlerAddMovie;
+
+        let f = document.querySelector("#movieForm");
+        if (f) f.onsubmit = C.handlerAddMovie;
+      }
+    };
+
+    C.handlerAddMovie = async function (event) {
+      event.preventDefault();
+      let formData = {
+        name: document.querySelector("#name").value,
+        director: document.querySelector("#director").value,
+        year: document.querySelector("#year").value,
+        length: document.querySelector("#length").value,
+        description: document.querySelector("#description").value,
+        image: document.querySelector("#image").value,
+        trailer: document.querySelector("#trailer").value,
+        min_age: document.querySelector("#min_age").value,
+        id_category: document.querySelector("#id_category").value
       };
 
-      C.start();
-    </script>
-  </body>
+      V.renderLog("Envoi en cours...");
+      let res = await DataMovie.add(formData);
+      if (res) V.renderLog("Réponse: " + res.message);
+    };
+
+    C.start();
+
+  </script>
+</body>
+
 </html>
