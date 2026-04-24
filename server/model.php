@@ -5,6 +5,17 @@ define("DBNAME", "mamedov1");
 define("DBLOGIN", "mamedov1");
 define("DBPWD", "mamedov1"); 
 
+function getMovieById($id){
+    $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+    // Используем запрос с фильтром по id
+    $sql = "SELECT * FROM Movie WHERE id = :id";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute([':id' => $id]);
+    
+    // FETCH_OBJ вернет один объект (фильм)
+    return $stmt->fetch(PDO::FETCH_OBJ); 
+}
+
 function getAllMovies(){
     try {
 

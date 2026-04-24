@@ -1,13 +1,18 @@
-
-let HOST_URL = "https://mmi.unilim.fr/~mamedov1/SAE2.03-MAMEDOV"; 
+let HOST_URL = "https://mmi.unilim.fr/~mamedov1/SAE2.03-MAMEDOV/server";
 
 let DataMovie = {};
 
-DataMovie.requestMovies = async function(){
+// Получение всех фильмов
+DataMovie.requestAllMovies = async function() {
+    let response = await fetch(HOST_URL + "/script.php?todo=readmovies");
+    return await response.json();
+};
 
-    let answer = await fetch(HOST_URL + "/server/script.php?todo=readmovies");
-    let data = await answer.json();
-    return data;
-}
+// Получение деталей одного фильма
+DataMovie.requestMovieDetails = async function(id) {
+    let response = await fetch(HOST_URL + "/script.php?todo=readMovieDetail&id=" + id);
+    return await response.json();
+};
 
-export {DataMovie};
+// КРИТИЧЕСКИ ВАЖНО: Добавь эту строку в самый конец!
+export { DataMovie };

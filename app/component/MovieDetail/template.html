@@ -1,0 +1,17 @@
+<div class="movie-detail">
+    <button onclick="C.handlerHome()">← Retour à la liste</button>
+    <h1>{{name}}</h1>
+    <div class="detail-content">
+        <img src="../server/images/{{image}}" alt="{{name}}">
+        <div class="info">
+            <p><strong>Réalisateur:</strong> {{director}}</p>
+            <p><strong>Année:</strong> {{year}}</p>
+            <p><strong>Durée:</strong> {{length}} min</p>
+            <p><strong>Âge:</strong> {{min_age}}+</p>
+            <p class="description">{{description}}</p>
+        </div>
+    </div>
+    <div class="trailer">
+        <iframe width="560" height="315" src="{{trailer}}" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>

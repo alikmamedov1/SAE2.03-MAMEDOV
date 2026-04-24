@@ -1,57 +1,87 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>SAE2.03 APP</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./component/Movie/style.css" />
-    <link rel="stylesheet" href="./css/base.css" />
-    
+    <meta charset="UTF-8">
+    <title>CinéMamedov - Application</title>
+    <link rel="stylesheet" href="./css/base.css">
 </head>
-
 <body>
-    <header id="header"></header>
-    <section id="content"></section>
+
+    <header id="navbar-container"></header>
+
+    <main id="main-content"></main>
 
     <script type="module">
-        import { NavBar } from "./component/NavBar/script.js";
-        import { Movie } from "./component/Movie/script.js";
+        // 1. Импортируем необходимые модули
         import { DataMovie } from "./data/dataMovie.js";
+        import { Movie } from "./component/Movie/script.js";
+        import { MovieDetail } from "./component/MovieDetail/script.js";
+        import { NavBar } from "./component/NavBar/script.js";
 
-        window.C = {};
-
-        C.handlerAbout = function () {
-            alert("Ceci est une base de projet pour la SAE2.03 édition 2026. Bonne chance !");
-        };
-
-
-        C.getMovie = async function() {
-            let data = await DataMovie.requestMovies(); 
-            V.renderMovie(data);
-            console.log(data)
-        };
-
-        C.start = function () {
-            V.renderNavBar("C.handlerAbout()");
-            C.getMovie(); 
-        };
-
-       
+        // 2. Инициализируем глобальные объекты для доступа из HTML (onclick)
+        // Это исправляет ошибку "C is not defined"
+        window.C = {}; 
         window.V = {};
 
-        V.renderNavBar = function (hAbout) {
-            let header = document.querySelector("#header");
-            header.innerHTML = NavBar.format(hAbout);
+        // --- КОНТРОЛЛЕРЫ (C) ---
+
+        // Стартовая функция
+        C.start = async function () {
+            // Отрисовываем меню
+            V.renderNavBar();
+            // Загружаем и отрисовываем список фильмов
+            await C.handlerHome();
         };
 
-        V.renderMovie = function (allmovie) {
-            let content = document.querySelector("#content");
-            
-            content.innerHTML = Movie.format(allmovie); 
+        // Обработчик перехода на главную (список фильмов)
+        C.handlerHome = async function () {
+            V.renderLog("Chargement des films...");
+            let movies = await DataMovie.requestAllMovies();
+            V.renderMovieList(movies);
         };
 
-        
+        // Обработчик клика на конкретный фильм
+        C.handlerDetail = async function (id) {
+            V.renderLog("Chargement des détails...");
+            // Запрашиваем детали одного фильма у сервера
+            let movie = await DataMovie.requestMovieDetails(id);
+            V.renderDetail(movie);
+        };
+
+        // --- ПРЕДСТАВЛЕНИЯ (V) ---
+
+        // Отрисовка навигационной панели
+        V.renderNavBar = function () {
+            document.querySelector("#navbar-container").innerHTML = NavBar.format();
+        };
+
+        // Отрисовка списка всех фильмов
+        V.renderMovieList = function (movies) {
+            let content = document.querySelector("#main-content");
+            let html = '<div class="movie-list">';
+            for (let m of movies) {
+                // Каждый компонент Movie теперь кликабельный
+                html += Movie.format(m); 
+            }
+            html += '</div>';
+            content.innerHTML = html;
+        };
+
+        // Отрисовка детальной страницы фильма
+        V.renderDetail = function (movie) {
+            let content = document.querySelector("#main-content");
+            // Используем новый компонент MovieDetail
+            content.innerHTML = MovieDetail.format(movie);
+        };
+
+        // Вспомогательная функция для логов (опционально)
+        V.renderLog = function (message) {
+            console.log("[App]: " + message);
+        };
+
+        // Запуск приложения
         C.start();
+
     </script>
 </body>
 </html>

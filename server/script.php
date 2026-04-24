@@ -56,6 +56,11 @@ if ( isset($_REQUEST['todo']) ){
       $data = readMoviesController();
       break;
 
+case 'readMovieDetail': // Новый случай
+      $id = $_REQUEST['id'];
+      $data = readMovieDetailController($id);
+      break;
+
 case 'addMovie':
       $data = addMovieController($_POST);
       break;

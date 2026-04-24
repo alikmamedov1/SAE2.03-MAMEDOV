@@ -20,6 +20,10 @@
  */
 require("model.php");
 
+function readMovieDetailController($id){
+    $movie = getMovieById($id);
+    return $movie;
+}
 
 function readMoviesController(){
     $movies = getAllMovies();
@@ -27,7 +31,7 @@ function readMoviesController(){
 }
 
 function addMovieController(){
-    // Собираем данные из запроса
+
     $name = $_REQUEST['name'];
     $director = $_REQUEST['director'];
     $year = $_REQUEST['year'];
@@ -38,7 +42,6 @@ function addMovieController(){
     $min_age = $_REQUEST['min_age'];
     $id_category = $_REQUEST['id_category'];
 
-    // Передаем их в модель именно в таком порядке
     $res = addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category);
     
     if ($res) {
