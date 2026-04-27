@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>CinéMamedov - Application</title>
+    <title>SAE2.03 APP</title>
     <link rel="stylesheet" href="./css/base.css">
 </head>
 <body>
@@ -12,74 +12,61 @@
     <main id="main-content"></main>
 
     <script type="module">
-        // 1. Импортируем необходимые модули
+
         import { DataMovie } from "./data/dataMovie.js";
         import { Movie } from "./component/Movie/script.js";
         import { MovieDetail } from "./component/MovieDetail/script.js";
         import { NavBar } from "./component/NavBar/script.js";
 
-        // 2. Инициализируем глобальные объекты для доступа из HTML (onclick)
-        // Это исправляет ошибку "C is not defined"
         window.C = {}; 
         window.V = {};
 
-        // --- КОНТРОЛЛЕРЫ (C) ---
 
-        // Стартовая функция
+
+
         C.start = async function () {
-            // Отрисовываем меню
+
             V.renderNavBar();
-            // Загружаем и отрисовываем список фильмов
+
             await C.handlerHome();
         };
 
-        // Обработчик перехода на главную (список фильмов)
         C.handlerHome = async function () {
             V.renderLog("Chargement des films...");
             let movies = await DataMovie.requestAllMovies();
             V.renderMovieList(movies);
         };
 
-        // Обработчик клика на конкретный фильм
         C.handlerDetail = async function (id) {
             V.renderLog("Chargement des détails...");
-            // Запрашиваем детали одного фильма у сервера
             let movie = await DataMovie.requestMovieDetails(id);
             V.renderDetail(movie);
         };
 
-        // --- ПРЕДСТАВЛЕНИЯ (V) ---
 
-        // Отрисовка навигационной панели
         V.renderNavBar = function () {
             document.querySelector("#navbar-container").innerHTML = NavBar.format();
         };
 
-        // Отрисовка списка всех фильмов
         V.renderMovieList = function (movies) {
             let content = document.querySelector("#main-content");
             let html = '<div class="movie-list">';
             for (let m of movies) {
-                // Каждый компонент Movie теперь кликабельный
                 html += Movie.format(m); 
             }
             html += '</div>';
             content.innerHTML = html;
         };
 
-        // Отрисовка детальной страницы фильма
         V.renderDetail = function (movie) {
             let content = document.querySelector("#main-content");
-            // Используем новый компонент MovieDetail
             content.innerHTML = MovieDetail.format(movie);
         };
 
-        // Вспомогательная функция для логов (опционально)
         V.renderLog = function (message) {
             console.log("[App]: " + message);
         };
 
-        // Запуск приложения
         C.start();
 
     </script>

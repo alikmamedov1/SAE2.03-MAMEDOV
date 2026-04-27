@@ -7,12 +7,17 @@ define("DBPWD", "mamedov1");
 
 function getMovieById($id){
     $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-    // Используем запрос с фильтром по id
-    $sql = "SELECT * FROM Movie WHERE id = :id";
+    
+    // Мы выбираем все поля из Movie и поле name из таблицы Category
+    // Даем полю Category.name псевдоним 'category_name', чтобы к нему было удобно обращаться
+    $sql = "SELECT Movie.*, Category.name AS category_name 
+            FROM Movie 
+            LEFT JOIN Category ON Movie.id_category = Category.id 
+            WHERE Movie.id = :id";
+            
     $stmt = $cnx->prepare($sql);
     $stmt->execute([':id' => $id]);
     
-    // FETCH_OBJ вернет один объект (фильм)
     return $stmt->fetch(PDO::FETCH_OBJ); 
 }
 

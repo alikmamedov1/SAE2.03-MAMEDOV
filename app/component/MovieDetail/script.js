@@ -9,6 +9,7 @@ MovieDetail.format = function (movie) {
     html = html.replace(/{{director}}/g, movie.director);
     html = html.replace(/{{year}}/g, movie.year);
     html = html.replace(/{{length}}/g, movie.length);
+    html = html.replace(/{{category}}/g, movie.category_name);
     html = html.replace(/{{description}}/g, movie.description);
     html = html.replace(/{{image}}/g, movie.image);
     html = html.replace(/{{min_age}}/g, movie.min_age);
