@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>SAE2.03 APP</title>
     <link rel="stylesheet" href="./css/base.css">
 </head>
+
 <body>
 
     <header id="navbar-container"></header>
@@ -17,8 +19,8 @@
         import { Movie } from "./component/Movie/script.js";
         import { MovieDetail } from "./component/MovieDetail/script.js";
         import { NavBar } from "./component/NavBar/script.js";
-
-        window.C = {}; 
+        import { MovieCategory } from "./component/MovieCategory/script.js";
+        window.C = {};
         window.V = {};
 
 
@@ -48,14 +50,13 @@
             document.querySelector("#navbar-container").innerHTML = NavBar.format();
         };
 
-        V.renderMovieList = function (movies) {
+        V.renderMovieList = function (groupedMovies) {
             let content = document.querySelector("#main-content");
-            let html = '<div class="movie-list">';
-            for (let m of movies) {
-                html += Movie.format(m); 
+            content.innerHTML = "";
+
+            for (const [categoryName, moviesList] of Object.entries(groupedMovies)) {
+                content.innerHTML += MovieCategory.format(categoryName, moviesList);
             }
-            html += '</div>';
-            content.innerHTML = html;
         };
 
         V.renderDetail = function (movie) {
@@ -71,4 +72,5 @@
 
     </script>
 </body>
+
 </html>

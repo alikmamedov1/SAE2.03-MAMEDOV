@@ -1,15 +1,14 @@
-let HOST_URL = "https://mmi.unilim.fr/~mamedov1/SAE2.03-MAMEDOV/server";
-
 let DataMovie = {};
 
-DataMovie.add = async function(formData) {
-    let bodyParams = new URLSearchParams(formData).toString();
-    let response = await fetch(HOST_URL + "/script.php?todo=addMovie", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: bodyParams
-    });
+DataMovie.requestAllMovies = async function () {
+    // ВАЖНО: путь должен вести в папку server, которая находится НА УРОВЕНЬ ВЫШЕ папки app
+    let response = await fetch("../server/script.php?todo=readMovies");
     return await response.json();
 };
 
-export {DataMovie};
+DataMovie.requestMovieDetails = async function (id) {
+    let response = await fetch("../server/script.php?todo=readDetail&id=" + id);
+    return await response.json();
+};
+
+export { DataMovie };

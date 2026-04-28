@@ -8,8 +8,7 @@ define("DBPWD", "mamedov1");
 function getMovieById($id){
     $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
     
-    // Мы выбираем все поля из Movie и поле name из таблицы Category
-    // Даем полю Category.name псевдоним 'category_name', чтобы к нему было удобно обращаться
+
     $sql = "SELECT Movie.*, Category.name AS category_name 
             FROM Movie 
             LEFT JOIN Category ON Movie.id_category = Category.id 
@@ -39,6 +38,17 @@ function getAllMovies(){
 
         return false;
     }
+}
+
+function getAllMoviesWithCategory(){
+    $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+    $sql = "SELECT m.*, c.name AS category_name 
+            FROM Movie m 
+            LEFT JOIN Category c ON m.id_category = c.id 
+            ORDER BY c.name, m.name";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
 
 function addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category){

@@ -52,9 +52,9 @@ if ( isset($_REQUEST['todo']) ){
   // peut s'écrire aussi avec des if/else
   switch($todo){
 
-    case 'readmovies':
-      $data = readMoviesController();
-      break;
+case 'readmovies':
+    $data = readMoviesGroupedController();
+    break;
 
 case 'readMovieDetail': // Новый случай
       $id = $_REQUEST['id'];

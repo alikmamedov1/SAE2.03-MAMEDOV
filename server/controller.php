@@ -30,6 +30,24 @@ function readMoviesController(){
     return $movies;
 }
 
+function readMoviesGroupedController(){
+    $movies = getAllMoviesWithCategory();
+    $grouped = [];
+
+    if ($movies) {
+        foreach ($movies as $m) {
+            $catName = $m->category_name ?: "Autre"; 
+            
+            if (!isset($grouped[$catName])) {
+                $grouped[$catName] = [];
+            }
+            $grouped[$catName][] = $m;
+        }
+        return $grouped;
+    }
+    return false;
+}
+
 function addMovieController(){
 
     $name = $_REQUEST['name'];
