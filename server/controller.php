@@ -49,22 +49,23 @@ function readMoviesGroupedController(){
 }
 
 function addMovieController(){
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
 
-    $name = $_REQUEST['name'];
-    $director = $_REQUEST['director'];
-    $year = $_REQUEST['year'];
-    $length = $_REQUEST['length'];
-    $description = $_REQUEST['description'];
-    $image = $_REQUEST['image'];
-    $trailer = $_REQUEST['trailer'];
-    $min_age = $_REQUEST['min_age'];
-    $id_category = $_REQUEST['id_category'];
-
-    $res = addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category);
-    
-    if ($res) {
-        return ["message" => "Le film a été ajouté avec succès"];
-    } else {
-        return ["message" => "Erreur lors de l'ajout"]; 
+    if ($data) {
+        $name = $data['name'];
+        $director = $data['director'];
+        $year = $data['year'];
+        $length = $data['length'];
+        $description = $data['description'];
+        $image = $data['image'];
+        $trailer = $data['trailer'];
+        $min_age = $data['min_age'];
+        $id_category = $data['id_category'];
+        
+        $res = addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category);
+        return $res ? ["message" => "Succès"] : ["message" => "Erreur SQL"];
     }
+    
+    return ["message" => "Données JSON invalides"];
 }

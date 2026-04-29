@@ -62,7 +62,7 @@ case 'readMovieDetail': // Новый случай
       break;
 
 case 'addMovie':
-      $data = addMovieController($_POST);
+      $data = addMovieController();
       break;
 
 

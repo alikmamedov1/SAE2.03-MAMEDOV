@@ -10,7 +10,7 @@ MovieCategory.format = function (categoryName, movies) {
     html = html.replace(/{{category_name}}/g, categoryName);
     
     let moviesHtml = "";
-    // Теперь мы используем твой старый добрый Movie.format для каждого фильма в этой категории
+   
     movies.forEach(movie => {
         moviesHtml += Movie.format(movie);
     });
