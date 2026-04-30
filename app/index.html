@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>SAE2.03 APP</title>
     <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./component/NavBar/style.css">
 </head>
 
 <body>
@@ -14,19 +15,25 @@
     <main id="main-content"></main>
 
     <script type="module">
-
         import { DataMovie } from "./data/dataMovie.js";
+        import { DataProfile } from "./data/dataProfile.js"; // НОВЫЙ ИМПОРТ
         import { Movie } from "./component/Movie/script.js";
         import { MovieDetail } from "./component/MovieDetail/script.js";
         import { NavBar } from "./component/NavBar/script.js";
         import { MovieCategory } from "./component/MovieCategory/script.js";
+
         window.C = {};
         window.V = {};
 
-
-
+        window.state = {
+            profiles: [],
+            activeProfile: null
+        };
 
         C.start = async function () {
+            V.renderLog("Démarrage...");
+
+            state.profiles = await DataProfile.read();
 
             V.renderNavBar();
 
@@ -36,7 +43,32 @@
         C.handlerHome = async function () {
             V.renderLog("Chargement des films...");
             let movies = await DataMovie.requestAllMovies();
-            V.renderMovieList(movies);
+
+            if (state.activeProfile) {
+                let filteredMovies = {};
+                let maxAge = parseInt(state.activeProfile.age_restriction);
+
+                for (const [cat, list] of Object.entries(movies)) {
+                    let filteredList = list.filter(m => parseInt(m.min_age) <= maxAge);
+                    if (filteredList.length > 0) {
+                        filteredMovies[cat] = filteredList;
+                    }
+                }
+                V.renderMovieList(filteredMovies);
+            } else {
+                V.renderMovieList(movies);
+            }
+        };
+
+        C.handlerChangeProfile = function (event) {
+            let id = event.target.value;
+            window.state.activeProfile = window.state.profiles.find(p => p.id == id);
+
+            V.renderLog("Profil sélectionné: " + (window.state.activeProfile ? window.state.activeProfile.name : "Aucun"));
+
+            V.renderNavBar();
+
+            C.handlerHome();
         };
 
         C.handlerDetail = async function (id) {
@@ -45,10 +77,10 @@
             V.renderDetail(movie);
         };
 
-
         V.renderNavBar = function () {
-            document.querySelector("#navbar-container").innerHTML = NavBar.format();
-        };
+    let container = document.querySelector("#navbar-container");
+    container.innerHTML = NavBar.format(window.state.profiles, window.state.activeProfile);
+};
 
         V.renderMovieList = function (groupedMovies) {
             let content = document.querySelector("#main-content");

@@ -1,4 +1,4 @@
-let HOST_URL = "https://mmi.unilim.fr/~mamedov1/SAE2.03-MAMEDOV/server";
+let HOST_URL = "../server";
 
 let DataProfile = {};
 
@@ -8,6 +8,11 @@ DataProfile.add = async function(formData) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
     });
+    return await response.json();
+};
+
+DataProfile.read = async function() {
+    let response = await fetch(HOST_URL + "/script.php?todo=readProfiles");
     return await response.json();
 };
 

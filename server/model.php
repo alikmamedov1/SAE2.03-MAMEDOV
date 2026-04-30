@@ -93,4 +93,31 @@ function addProfile($name, $avatar, $age_restriction){
     }
 }
 
+function getProfiles() {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        $sql = "SELECT * FROM Profile"; // Проверь название таблицы!
+        $stmt = $cnx->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Если база выдаст ошибку, мы её увидим
+        error_log($e->getMessage());
+        return false;
+    }
+}
+
+function getAllCategories() {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        $sql = "SELECT * FROM Category ORDER BY name ASC";
+        $stmt = $cnx->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        return false;
+    }
+}
+
 ?>

@@ -52,6 +52,10 @@ if ( isset($_REQUEST['todo']) ){
   // peut s'écrire aussi avec des if/else
   switch($todo){
 
+case 'readProfiles':
+    $data = getProfilesController();
+    break;
+
 case 'addProfile':
     $data = addProfileController();
     break;
@@ -69,6 +73,9 @@ case 'addMovie':
       $data = addMovieController();
       break;
 
+case 'readCategories':
+    $data = readCategoriesController();
+    break;
 
     default: // il y a un paramètre todo mais sa valeur n'est pas reconnue/supportée
       echo json_encode('[error] Unknown todo value');

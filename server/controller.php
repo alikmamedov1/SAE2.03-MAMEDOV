@@ -20,6 +20,11 @@
  */
 require("model.php");
 
+function readCategoriesController() {
+    $res = getAllCategories();
+    return $res;
+}
+
 function readMovieDetailController($id){
     $movie = getMovieById($id);
     return $movie;
@@ -84,8 +89,13 @@ function addProfileController(){
         if ($res) {
             return ["message" => "Le profil a été ajouté avec succès."];
         } else {
-            return ["message" => "Erreur SQL при добавлении профиля"];
+            return ["message" => "Erreur SQL lors de l'ajout du profil"];
         }
     }
     return ["message" => "Données JSON invalides"];
+} 
+
+function getProfilesController() {
+    $res = getProfiles(); 
+    return $res; 
 }

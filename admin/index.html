@@ -14,7 +14,7 @@
   <section id="profile-form-container"></section>
 
   <script type="module">
-    // 1. ВСЕ ИМПОРТЫ ТОЛЬКО ЗДЕСЬ (В НАЧАЛЕ)
+
     import { Log } from "./component/Log/script.js";
     import { MovieForm } from "./component/MovieForm/script.js";
     import { ProfileForm } from "./component/ProfileForm/script.js";
@@ -24,21 +24,47 @@
     window.C = {};
     window.V = {};
 
-    // 2. ИНИЦИАЛИЗАЦИЯ
-    C.start = function () {
-      V.renderLog("Démarrage de l'application");
-      V.renderForm();
+    // --- НОВАЯ ФУНКЦИЯ ДЛЯ ЗАГРУЗКИ КАТЕГОРИЙ ---
+    C.loadCategories = async function () {
+      try {
+        // Вызываем сервер через script.php?todo=readCategories
+        let response = await fetch("../server/script.php?todo=readCategories");
+        let categories = await response.json();
+
+        // Находим селектор внутри уже отрисованной формы
+        let select = document.querySelector("#id_category");
+        
+        if (select && categories) {
+          select.innerHTML = ""; // Очищаем старые 5 категорий
+          categories.forEach(cat => {
+            let option = document.createElement("option");
+            option.value = cat.id;
+            option.textContent = cat.name;
+            select.appendChild(option);
+          });
+          V.renderLog("Catégories chargées avec succès");
+        }
+      } catch (error) {
+        V.renderLog("Erreur lors du chargement des catégories");
+        console.error(error);
+      }
     };
 
-    // 3. ЛОГИ
+    C.start = async function () { // Добавили async
+      V.renderLog("Démarrage de l'application");
+      V.renderForm();
+      
+      // После отрисовки формы загружаем в неё данные из БД
+      await C.loadCategories();
+    };
+
     V.renderLog = function (txt) {
       let content = document.querySelector("#log");
       if (content) content.innerHTML = Log.format(txt);
     };
 
-    // 4. ОТРИСОВКА ФОРМ (ОДНА ФУНКЦИЯ ДЛЯ ВСЕХ)
     V.renderForm = function () {
-      // Форма фильма
+
       let movieContent = document.querySelector("#form-container");
       if (movieContent) {
         movieContent.innerHTML = MovieForm.format();
@@ -46,7 +72,6 @@
         if (fMovie) fMovie.onsubmit = C.handlerAddMovie;
       }
 
-      // Форма профиля
       let profileContent = document.querySelector("#profile-form-container");
       if (profileContent) {
         profileContent.innerHTML = ProfileForm.format();
@@ -55,7 +80,6 @@
       }
     };
 
-    // 5. ОБРАБОТЧИК ФИЛЬМА
     C.handlerAddMovie = async function (event) {
       event.preventDefault();
       let formData = {
@@ -75,7 +99,6 @@
       if (res) V.renderLog("Réponse (Film): " + res.message);
     };
 
-    // 6. ОБРАБОТЧИК ПРОФИЛЯ
     C.handlerAddProfile = async function (event) {
       event.preventDefault();
       let profileData = {
@@ -89,7 +112,6 @@
       if (res) V.renderLog("Réponse (Profil): " + res.message);
     };
 
-    // ЗАПУСК
     C.start();
 
   </script>
