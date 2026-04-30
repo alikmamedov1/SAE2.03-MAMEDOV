@@ -74,4 +74,23 @@ function addMovie($name, $director, $year, $length, $description, $image, $trail
     return $res; 
 }
 
+function addProfile($name, $avatar, $age_restriction){
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        
+        $sql = "INSERT INTO Profile (name, avatar, age_restriction) VALUES (:name, :avatar, :age)";
+        
+        $stmt = $cnx->prepare($sql);
+        $res = $stmt->execute([
+            ':name' => $name,
+            ':avatar' => $avatar,
+            ':age' => (int)$age_restriction 
+        ]);
+        
+        return $res;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 ?>

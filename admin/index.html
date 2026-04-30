@@ -10,37 +10,52 @@
 
 <body>
   <section id="log"></section>
-
   <section id="form-container"></section>
+  <section id="profile-form-container"></section>
 
   <script type="module">
+    // 1. ВСЕ ИМПОРТЫ ТОЛЬКО ЗДЕСЬ (В НАЧАЛЕ)
     import { Log } from "./component/Log/script.js";
     import { MovieForm } from "./component/MovieForm/script.js";
+    import { ProfileForm } from "./component/ProfileForm/script.js";
     import { DataMovie } from "../app/data/dataMovie.js?update=123";
+    import { DataProfile } from "../app/data/dataProfile.js?update=123";
 
     window.C = {};
     window.V = {};
 
+    // 2. ИНИЦИАЛИЗАЦИЯ
     C.start = function () {
       V.renderLog("Démarrage de l'application");
       V.renderForm();
     };
 
+    // 3. ЛОГИ
     V.renderLog = function (txt) {
       let content = document.querySelector("#log");
       if (content) content.innerHTML = Log.format(txt);
     };
 
+    // 4. ОТРИСОВКА ФОРМ (ОДНА ФУНКЦИЯ ДЛЯ ВСЕХ)
     V.renderForm = function () {
-      let content = document.querySelector("#form-container");
-      if (content) {
-        content.innerHTML = MovieForm.format();
+      // Форма фильма
+      let movieContent = document.querySelector("#form-container");
+      if (movieContent) {
+        movieContent.innerHTML = MovieForm.format();
+        let fMovie = document.querySelector("#movieForm");
+        if (fMovie) fMovie.onsubmit = C.handlerAddMovie;
+      }
 
-        let f = document.querySelector("#movieForm");
-        if (f) f.onsubmit = C.handlerAddMovie;
+      // Форма профиля
+      let profileContent = document.querySelector("#profile-form-container");
+      if (profileContent) {
+        profileContent.innerHTML = ProfileForm.format();
+        let fProfile = document.querySelector("#profileForm");
+        if (fProfile) fProfile.onsubmit = C.handlerAddProfile;
       }
     };
 
+    // 5. ОБРАБОТЧИК ФИЛЬМА
     C.handlerAddMovie = async function (event) {
       event.preventDefault();
       let formData = {
@@ -53,16 +68,30 @@
         trailer: document.querySelector("#trailer").value,
         min_age: document.querySelector("#min_age").value,
         id_category: document.querySelector("#id_category").value
-      }; 
+      };
 
-      V.renderLog("Envoi en cours...");
+      V.renderLog("Envoi du film en cours...");
       let res = await DataMovie.add(formData);
-      if (res) V.renderLog("Réponse: " + res.message);
+      if (res) V.renderLog("Réponse (Film): " + res.message);
     };
 
+    // 6. ОБРАБОТЧИК ПРОФИЛЯ
+    C.handlerAddProfile = async function (event) {
+      event.preventDefault();
+      let profileData = {
+        name: document.querySelector("#p_name").value,
+        avatar: document.querySelector("#p_avatar").value,
+        age_restriction: document.querySelector("#p_age").value
+      };
+
+      V.renderLog("Création du profil en cours...");
+      let res = await DataProfile.add(profileData);
+      if (res) V.renderLog("Réponse (Profil): " + res.message);
+    };
+
+    // ЗАПУСК
     C.start();
 
   </script>
 </body>
-
 </html>

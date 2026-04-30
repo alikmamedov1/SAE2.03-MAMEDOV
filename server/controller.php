@@ -69,3 +69,23 @@ function addMovieController(){
     
     return ["message" => "Données JSON invalides"];
 }
+
+function addProfileController(){
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+
+    if ($data) {
+        $name = $data['name'];
+        $avatar = $data['avatar'];
+        $age = $data['age_restriction']; 
+
+        $res = addProfile($name, $avatar, $age);
+        
+        if ($res) {
+            return ["message" => "Le profil a été ajouté avec succès."];
+        } else {
+            return ["message" => "Erreur SQL при добавлении профиля"];
+        }
+    }
+    return ["message" => "Données JSON invalides"];
+}
