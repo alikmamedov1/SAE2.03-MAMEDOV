@@ -40,17 +40,6 @@ function getAllMovies(){
     }
 }
 
-function getAllMoviesWithCategory(){
-    $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-    $sql = "SELECT m.*, c.name AS category_name 
-            FROM Movie m 
-            LEFT JOIN Category c ON m.id_category = c.id 
-            ORDER BY c.name, m.name";
-    $stmt = $cnx->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_OBJ);
-}
-
 function addMovie($name, $director, $year, $length, $description, $image, $trailer, $min_age, $id_category){
     $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
     
@@ -101,7 +90,7 @@ function getProfiles() {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // Если база выдаст ошибку, мы её увидим
+       
         error_log($e->getMessage());
         return false;
     }
@@ -116,6 +105,35 @@ function getAllCategories() {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         error_log($e->getMessage());
+        return false;
+    }
+}
+
+function getAllMoviesWithCategory(){
+    $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+    $sql = "SELECT m.*, c.name AS category_name 
+            FROM Movie m 
+            LEFT JOIN Category c ON m.id_category = c.id 
+            ORDER BY c.name, m.name";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+function getAllMoviesWithCategoryFiltered($ageLimit) {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+       
+        $sql = "SELECT m.*, c.name AS category_name 
+                FROM Movie m 
+                LEFT JOIN Category c ON m.id_category = c.id 
+                WHERE m.min_age <= :age
+                ORDER BY c.name, m.name";
+                
+        $stmt = $cnx->prepare($sql);
+        $stmt->execute([':age' => (int)$ageLimit]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
         return false;
     }
 }

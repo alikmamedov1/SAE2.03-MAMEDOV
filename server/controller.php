@@ -35,14 +35,13 @@ function readMoviesController(){
     return $movies;
 }
 
-function readMoviesGroupedController(){
-    $movies = getAllMoviesWithCategory();
+function readMoviesGroupedController($ageLimit){
+    $movies = getAllMoviesWithCategoryFiltered($ageLimit);
     $grouped = [];
 
     if ($movies) {
         foreach ($movies as $m) {
             $catName = $m->category_name ?: "Autre"; 
-            
             if (!isset($grouped[$catName])) {
                 $grouped[$catName] = [];
             }
@@ -50,7 +49,7 @@ function readMoviesGroupedController(){
         }
         return $grouped;
     }
-    return false;
+    return $movies; 
 }
 
 function addMovieController(){

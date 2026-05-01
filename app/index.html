@@ -16,7 +16,7 @@
 
     <script type="module">
         import { DataMovie } from "./data/dataMovie.js";
-        import { DataProfile } from "./data/dataProfile.js"; // НОВЫЙ ИМПОРТ
+        import { DataProfile } from "./data/dataProfile.js"; 
         import { Movie } from "./component/Movie/script.js";
         import { MovieDetail } from "./component/MovieDetail/script.js";
         import { NavBar } from "./component/NavBar/script.js";
@@ -42,23 +42,29 @@
 
         C.handlerHome = async function () {
             V.renderLog("Chargement des films...");
-            let movies = await DataMovie.requestAllMovies();
-
-            if (state.activeProfile) {
-                let filteredMovies = {};
-                let maxAge = parseInt(state.activeProfile.age_restriction);
-
-                for (const [cat, list] of Object.entries(movies)) {
-                    let filteredList = list.filter(m => parseInt(m.min_age) <= maxAge);
-                    if (filteredList.length > 0) {
-                        filteredMovies[cat] = filteredList;
-                    }
-                }
-                V.renderMovieList(filteredMovies);
-            } else {
-                V.renderMovieList(movies);
+            
+            let ageLimit = 0;
+            if (window.state.activeProfile && window.state.activeProfile.age_restriction !== undefined) {
+                ageLimit = window.state.activeProfile.age_restriction;
             }
-        };
+
+            const moviesGrouped = await DataMovie.requestMovies(ageLimit);
+
+            const main = document.querySelector("#main-content");
+            
+            const hasMovies = moviesGrouped && Object.keys(moviesGrouped).length > 0;
+
+            if (hasMovies) {
+                V.renderMovieList(moviesGrouped);
+            } else {
+                let html = `<p class="no-movies">Aucun film disponible pour votre tranche d'âge (${ageLimit}+).</p>`;
+                
+                if (!window.state.activeProfile) {
+                    html += `<p style="text-align:center; color:gray;">Sélectionnez un utilisateur pour afficher une liste de films personnalisée.</p>`;
+                }
+                
+                main.innerHTML = html;
+            } }
 
         C.handlerChangeProfile = function (event) {
             let id = event.target.value;
@@ -78,9 +84,14 @@
         };
 
         V.renderNavBar = function () {
-    let container = document.querySelector("#navbar-container");
-    container.innerHTML = NavBar.format(window.state.profiles, window.state.activeProfile);
-};
+            let container = document.querySelector("#navbar-container");
+            container.innerHTML = NavBar.format(window.state.profiles, window.state.activeProfile);
+            
+            let select = document.querySelector("#profile-selector");
+            if (select) {
+                select.onchange = C.handlerChangeProfile;
+            }
+        };
 
         V.renderMovieList = function (groupedMovies) {
             let content = document.querySelector("#main-content");

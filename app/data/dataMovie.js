@@ -23,4 +23,11 @@ DataMovie.requestMovieDetails = async function(id) {
     return await response.json();
 };
 
+DataMovie.requestMovies = async function (age = 0) {
+
+    let response = await fetch("../server/script.php?todo=readmovies&age=" + age);
+    let data = await response.json();
+    return data;
+};
+
 export { DataMovie };
