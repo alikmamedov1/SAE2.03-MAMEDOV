@@ -62,57 +62,59 @@ if ( isset($_REQUEST['todo']) ){
   // peut s'écrire aussi avec des if/else
   switch($todo){
 
-case 'readProfiles':
-    $data = getProfilesController();
-    break;
+    case 'readProfiles':
+        $data = getProfilesController();
+        break;
 
-case 'addProfile':
-    $id = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : 0;
-    $name = $_REQUEST['name'];
-    $avatar = $_REQUEST['avatar'];
-    $age = $_REQUEST['age_restriction'];
+    case 'addProfile':
+        $id = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : 0;
+        $name = $_REQUEST['name'];
+        $avatar = $_REQUEST['avatar'];
+        $age = $_REQUEST['age_restriction'];
 
-    if (saveProfileController($id, $name, $avatar, $age)) {
-        $data = ["message" => "Le profil a été enregistré avec succès."];
-    } else {
-        $data = ["message" => "Erreur lors de l'enregistrement."];
-    }
-    break;
+        if (saveProfileController($id, $name, $avatar, $age)) {
+            $data = ["message" => "Le profil a été enregistré avec succès."];
+        } else {
+            $data = ["message" => "Erreur lors de l'enregistrement."];
+        }
+        break;
 
-case 'readmovies':
-    $age = isset($_REQUEST['age']) ? $_REQUEST['age'] : 0; 
-    $data = readMoviesGroupedController($age);
-    break;
+    case 'readmovies':
+        $age = isset($_REQUEST['age']) ? $_REQUEST['age'] : 0; 
+        $data = readMoviesGroupedController($age);
+        break;
 
-case 'readMovieDetail': // Новый случай
-      $id = $_REQUEST['id'];
-      $data = readMovieDetailController($id);
-      break;
+    case 'readMovieDetail': 
+          $id = $_REQUEST['id'];
+          $data = readMovieDetailController($id);
+          break;
 
-case 'addMovie':
-      $data = addMovieController();
-      break;
+    case 'addMovie':
+          $data = addMovieController();
+          break;
 
-case 'readCategories':
-    $data = readCategoriesController();
-    break;
+    case 'readCategories':
+        $data = readCategoriesController();
+        break;
 
-case 'addFavorite':
-    // Просто записываем результат в $data
-    $data = addFavorite($_REQUEST['id_profile'], $_REQUEST['id_movie']);
-    // Если функция возвращает true/false, обернем в массив для красоты
-    $data = ["success" => (bool)$data];
-    break;
+    case 'addFavorite':
+        $data = addFavorite($_REQUEST['id_profile'], $_REQUEST['id_movie']);
+        $data = ["success" => (bool)$data];
+        break;
 
-case 'getFavorites':
-    // Просто записываем результат в $data
-    $data = getFavorites($_REQUEST['id_profile']);
-    break;
-    
-    default: // il y a un paramètre todo mais sa valeur n'est pas reconnue/supportée
-      echo json_encode('[error] Unknown todo value');
-      http_response_code(400); // 400 == "Bad request"
-      exit();
+    case 'getFavorites':
+        $data = getFavorites($_REQUEST['id_profile']);
+        break;
+
+    case 'removeFavorite':
+        $res = removeFavoriteController($_REQUEST['id_profile'], $_REQUEST['id_movie']);
+        $data = ["success" => (bool)$res];
+        break;
+        
+    default: 
+        echo json_encode('[error] Unknown todo value');
+        http_response_code(400); 
+        exit();
   }
 
   /**
@@ -126,7 +128,7 @@ case 'getFavorites':
    */
   if ($data===false){
     echo json_encode('[error] Controller returns false');
-    http_response_code(500); // 500 == "Internal error"
+    http_response_code(500); 
     exit();
   }
 

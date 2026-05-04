@@ -96,7 +96,7 @@ function saveProfile($id, $name, $avatar, $age_restriction) {
 function getProfiles() {
     try {
         $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-        $sql = "SELECT * FROM Profile"; // Проверь название таблицы!
+        $sql = "SELECT * FROM Profile"; 
         $stmt = $cnx->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -152,7 +152,6 @@ function getAllMoviesWithCategoryFiltered($ageLimit) {
 function addFavorite($id_profile, $id_movie) {
     try {
         $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-        // Используем INSERT IGNORE, чтобы не было ошибки, если фильм уже в избранном
         $sql = "INSERT IGNORE INTO Favorite (id_profile, id_movie) VALUES (:id_p, :id_m)";
         $stmt = $cnx->prepare($sql);
         return $stmt->execute([':id_p' => $id_profile, ':id_m' => $id_movie]);
@@ -164,7 +163,6 @@ function addFavorite($id_profile, $id_movie) {
 function getFavorites($id_profile) {
     try {
         $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-        // Выбираем все данные фильма, которые связаны с этим профилем в таблице Favorite
         $sql = "SELECT m.* FROM Movie m 
                 INNER JOIN Favorite f ON m.id = f.id_movie 
                 WHERE f.id_profile = :id_p";
@@ -173,6 +171,26 @@ function getFavorites($id_profile) {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         return [];
+    }
+}
+
+function removeFavorite($id_profile, $id_movie) {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        
+  
+        $sql = "DELETE FROM Favorite WHERE id_profile = :id_p AND id_movie = :id_m";
+        
+        $stmt = $cnx->prepare($sql);
+        $res = $stmt->execute([
+            ':id_p' => $id_profile, 
+            ':id_m' => $id_movie
+        ]);
+        
+        return $res;
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la suppression des favoris: " . $e->getMessage());
+        return false;
     }
 }
 

@@ -6,6 +6,7 @@
     <title>SAE2.03 APP</title>
     <link rel="stylesheet" href="./css/base.css">
     <link rel="stylesheet" href="./component/NavBar/style.css">
+    <link rel="stylesheet" href="./component/Movie/style.css">
 </head>
 
 <body>
@@ -116,7 +117,7 @@
 
         C.handlerAddFavorite = async function (id_movie) {
             if (!window.state.activeProfile) {
-                alert("Пожалуйста, выберите профиль!");
+                alert("Veuillez sélectionner un profil");
                 return;
             }
 
@@ -134,26 +135,38 @@ C.handlerShowFavorites = async function () {
             const idProfile = window.state.activeProfile.id;
             const favorites = await DataMovie.getFavorites(idProfile);
 
-            // ИСПРАВЛЕНО: используем правильный ID из твоего HTML
             const mainContainer = document.querySelector('#main-content'); 
 
             if (favorites.length === 0) {
-                mainContainer.innerHTML = '<h2 style="text-align:center; padding:20px;">Maintenant cette section est vide. Ajoutez des films.</h2>';
+                mainContainer.innerHTML = '<h2 style="text-align:center; padding:20px;">Votre liste de favoris est vide.</h2>';
                 return;
             }
 
             let html = '<h2 style="padding:20px; text-align:center;">Mes Favoris</h2>';
-            
-            // Обертка для карточек (проверь класс, который используется в MovieCategory)
             html += '<div class="movie-list" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">'; 
 
             for (let movie of favorites) {
-                // Movie.format вернет готовую карточку
-                html += Movie.format(movie);
+                html += Movie.format(movie, true);
             }
 
             html += '</div>';
             mainContainer.innerHTML = html;
+        };
+
+C.handlerRemoveFavorite = async function (id_movie) {
+            if (!confirm("Voulez-vous vraiment retirer ce film de vos favoris ?")) {
+                return;
+            }
+
+            const idProfile = window.state.activeProfile.id;
+            let res = await DataMovie.removeFavorite(idProfile, id_movie);
+
+            if (res.success) {
+                alert("Le film a été retiré de vos favoris.");
+                await C.handlerShowFavorites();
+            } else {
+                alert("Erreur lors de la suppression.");
+            }
         };
 
     </script>

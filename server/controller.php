@@ -102,3 +102,16 @@ function getProfilesController() {
 function saveProfileController($id, $name, $avatar, $age_restriction) {
     return saveProfile($id, $name, $avatar, $age_restriction);
 }
+
+function removeFavoriteController($id_profile, $id_movie) {
+    $id_p = (int)$id_profile;
+    $id_m = (int)$id_movie;
+
+    if ($id_p <= 0 || $id_m <= 0) {
+        return false;
+    }
+
+    $res = removeFavorite($id_p, $id_m);
+    
+    return $res;
+}

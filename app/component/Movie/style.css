@@ -53,19 +53,32 @@
   line-height: 1.2;
 }
 
-/* Только стиль кнопки, не меняя структуру карточки */
 .btn-fav {
-    margin-top: 15px;
-    padding: 8px 12px;
-    background-color: green; 
+    background-color: #27ae60;
     color: white;
     border: none;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
-    display: inline-block; 
+    transition: background 0.3s;
+    font-size: 0.9em;
+    margin-top: 10px;
 }
 
 .btn-fav:hover {
-    background-color: green;
+    background-color: #2ecc71;
+}
+
+.btn-remove {
+    background-color: #e74c3c; 
+}
+
+.btn-remove:hover {
+    background-color: #c0392b; 
+}
+
+.fav-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
