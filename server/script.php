@@ -110,7 +110,11 @@ if ( isset($_REQUEST['todo']) ){
         $res = removeFavoriteController($_REQUEST['id_profile'], $_REQUEST['id_movie']);
         $data = ["success" => (bool)$res];
         break;
-        
+    
+    case 'readFeatured':
+        $data = readFeaturedMoviesController();
+        break;
+
     default: 
         echo json_encode('[error] Unknown todo value');
         http_response_code(400); 
@@ -152,7 +156,5 @@ if ( isset($_REQUEST['todo']) ){
  * HTTP 404 (Not found), indiquant que la requête HTTP ne correspond à rien.
  */
 http_response_code(404); // 404 == "Not found"
-
-
 
 ?>

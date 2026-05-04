@@ -43,4 +43,9 @@ DataMovie.removeFavorite = async function(id_profile, id_movie) {
     return await response.json();
 };
 
+DataMovie.requestFeaturedMovies = async function () {
+    let response = await fetch(`${HOST_URL}/script.php?todo=readFeatured`);
+    return await response.json();
+};
+
 export { DataMovie };

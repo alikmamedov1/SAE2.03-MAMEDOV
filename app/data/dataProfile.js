@@ -13,6 +13,6 @@ DataProfile.add = async function(formData) {
 DataProfile.read = async function() {
     let response = await fetch(HOST_URL + "/script.php?todo=readProfiles");
     return await response.json();
-};
+    };
 
 export { DataProfile };

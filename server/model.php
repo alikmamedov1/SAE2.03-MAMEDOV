@@ -194,4 +194,25 @@ function removeFavorite($id_profile, $id_movie) {
     }
 }
 
+function getFeaturedMovies() {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        
+        $sql = "SELECT m.*, c.name AS category_name 
+                FROM Movie m 
+                LEFT JOIN Category c ON m.id_category = c.id 
+                WHERE m.featured = 1";
+        
+        $stmt = $cnx->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        error_log("Aucun film mis en avant pour le moment." . $e->getMessage());
+        return [];
+    }
+}
+
+
+
 ?>
