@@ -1,4 +1,14 @@
 <?php
+
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+
+if (is_array($data)) {
+    $_REQUEST = array_merge($_REQUEST, $data);
+}
+
+
+
 /** ARCHITECTURE PHP SERVEUR : Rôle du fichier script.php
  * 
  * Ce fichier est celui à qui on adresse toutes les requêtes HTTP.
@@ -57,7 +67,16 @@ case 'readProfiles':
     break;
 
 case 'addProfile':
-    $data = addProfileController();
+    $id = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : 0;
+    $name = $_REQUEST['name'];
+    $avatar = $_REQUEST['avatar'];
+    $age = $_REQUEST['age_restriction'];
+
+    if (saveProfileController($id, $name, $avatar, $age)) {
+        $data = ["message" => "Le profil a été enregistré avec succès."];
+    } else {
+        $data = ["message" => "Erreur lors de l'enregistrement."];
+    }
     break;
 
 case 'readmovies':
@@ -78,7 +97,17 @@ case 'readCategories':
     $data = readCategoriesController();
     break;
 
+case 'addFavorite':
+    // Просто записываем результат в $data
+    $data = addFavorite($_REQUEST['id_profile'], $_REQUEST['id_movie']);
+    // Если функция возвращает true/false, обернем в массив для красоты
+    $data = ["success" => (bool)$data];
+    break;
 
+case 'getFavorites':
+    // Просто записываем результат в $data
+    $data = getFavorites($_REQUEST['id_profile']);
+    break;
     
     default: // il y a un paramètre todo mais sa valeur n'est pas reconnue/supportée
       echo json_encode('[error] Unknown todo value');

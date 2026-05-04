@@ -24,38 +24,13 @@
     window.C = {};
     window.V = {};
 
-    // --- НОВАЯ ФУНКЦИЯ ДЛЯ ЗАГРУЗКИ КАТЕГОРИЙ ---
-    C.loadCategories = async function () {
-      try {
-        // Вызываем сервер через script.php?todo=readCategories
-        let response = await fetch("../server/script.php?todo=readCategories");
-        let categories = await response.json();
-
-        // Находим селектор внутри уже отрисованной формы
-        let select = document.querySelector("#id_category");
-        
-        if (select && categories) {
-          select.innerHTML = ""; // Очищаем старые 5 категорий
-          categories.forEach(cat => {
-            let option = document.createElement("option");
-            option.value = cat.id;
-            option.textContent = cat.name;
-            select.appendChild(option);
-          });
-          V.renderLog("Catégories chargées avec succès");
-        }
-      } catch (error) {
-        V.renderLog("Erreur lors du chargement des catégories");
-        console.error(error);
-      }
-    };
-
-    C.start = async function () { // Добавили async
+    C.start = async function () {
       V.renderLog("Démarrage de l'application");
+      
       V.renderForm();
       
-      // После отрисовки формы загружаем в неё данные из БД
-      await C.loadCategories();
+      await C.loadCategories(); 
+      await V.renderProfilesList(); 
     };
 
     V.renderLog = function (txt) {
@@ -64,7 +39,6 @@
     };
 
     V.renderForm = function () {
-
       let movieContent = document.querySelector("#form-container");
       if (movieContent) {
         movieContent.innerHTML = MovieForm.format();
@@ -77,6 +51,56 @@
         profileContent.innerHTML = ProfileForm.format();
         let fProfile = document.querySelector("#profileForm");
         if (fProfile) fProfile.onsubmit = C.handlerAddProfile;
+      }
+    };
+
+    V.renderProfilesList = async function () {
+      let profiles = await DataProfile.read();
+      let container = document.querySelector("#profile-list-container"); 
+      
+      if (container && profiles) {
+        container.innerHTML = "<h3>Modifier un profil existant :</h3>";
+        profiles.forEach(p => {
+          container.innerHTML += `
+            <button type="button" class="edit-profile-btn" data-id="${p.id}" style="margin: 5px;">
+              Modifier ${p.name} (${p.age_restriction}+)
+            </button>
+          `;
+        });
+
+        document.querySelectorAll(".edit-profile-btn").forEach(btn => {
+          btn.onclick = () => C.handlerFillProfileForm(btn.dataset.id);
+        });
+      }
+    };
+
+
+    C.loadCategories = async function () {
+      try {
+        let response = await fetch("../server/script.php?todo=readCategories");
+        let categories = await response.json();
+        let select = document.querySelector("#id_category");
+        if (select && categories) {
+          select.innerHTML = "";
+          categories.forEach(cat => {
+            select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+          });
+        }
+      } catch (e) { console.error(e); }
+    };
+
+    C.handlerFillProfileForm = async function (id) {
+      let profiles = await DataProfile.read();
+      let profile = profiles.find(p => p.id == id);
+
+      if (profile) {
+        document.querySelector("#p_id").value = profile.id; 
+        document.querySelector("#p_name").value = profile.name;
+        document.querySelector("#p_avatar").value = profile.avatar;
+        document.querySelector("#p_age").value = profile.age_restriction;
+        
+        V.renderLog("Modification du profil : " + profile.name);
+        document.querySelector("#profileForm button").textContent = "Mettre à jour le profil";
       }
     };
 
@@ -102,14 +126,24 @@
     C.handlerAddProfile = async function (event) {
       event.preventDefault();
       let profileData = {
+        id: document.querySelector("#p_id").value, 
         name: document.querySelector("#p_name").value,
         avatar: document.querySelector("#p_avatar").value,
         age_restriction: document.querySelector("#p_age").value
       };
 
-      V.renderLog("Création du profil en cours...");
+      V.renderLog("Enregistrement du profil en cours...");
       let res = await DataProfile.add(profileData);
-      if (res) V.renderLog("Réponse (Profil): " + res.message);
+      
+      if (res) {
+        V.renderLog("Réponse (Profil): " + res.message);
+        
+        document.querySelector("#profileForm").reset();
+        document.querySelector("#p_id").value = "0";
+        document.querySelector("#profileForm button").textContent = "Créer le profil";
+        
+        await V.renderProfilesList();
+      }
     };
 
     C.start();

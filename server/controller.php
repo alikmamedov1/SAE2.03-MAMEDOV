@@ -98,3 +98,7 @@ function getProfilesController() {
     $res = getProfiles(); 
     return $res; 
 }
+
+function saveProfileController($id, $name, $avatar, $age_restriction) {
+    return saveProfile($id, $name, $avatar, $age_restriction);
+}

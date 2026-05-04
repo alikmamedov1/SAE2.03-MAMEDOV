@@ -16,7 +16,7 @@
 
     <script type="module">
         import { DataMovie } from "./data/dataMovie.js";
-        import { DataProfile } from "./data/dataProfile.js"; 
+        import { DataProfile } from "./data/dataProfile.js";
         import { Movie } from "./component/Movie/script.js";
         import { MovieDetail } from "./component/MovieDetail/script.js";
         import { NavBar } from "./component/NavBar/script.js";
@@ -42,7 +42,7 @@
 
         C.handlerHome = async function () {
             V.renderLog("Chargement des films...");
-            
+
             let ageLimit = 0;
             if (window.state.activeProfile && window.state.activeProfile.age_restriction !== undefined) {
                 ageLimit = window.state.activeProfile.age_restriction;
@@ -51,20 +51,21 @@
             const moviesGrouped = await DataMovie.requestMovies(ageLimit);
 
             const main = document.querySelector("#main-content");
-            
+
             const hasMovies = moviesGrouped && Object.keys(moviesGrouped).length > 0;
 
             if (hasMovies) {
                 V.renderMovieList(moviesGrouped);
             } else {
                 let html = `<p class="no-movies">Aucun film disponible pour votre tranche d'âge (${ageLimit}+).</p>`;
-                
+
                 if (!window.state.activeProfile) {
                     html += `<p style="text-align:center; color:gray;">Sélectionnez un utilisateur pour afficher une liste de films personnalisée.</p>`;
                 }
-                
+
                 main.innerHTML = html;
-            } }
+            }
+        }
 
         C.handlerChangeProfile = function (event) {
             let id = event.target.value;
@@ -86,7 +87,7 @@
         V.renderNavBar = function () {
             let container = document.querySelector("#navbar-container");
             container.innerHTML = NavBar.format(window.state.profiles, window.state.activeProfile);
-            
+
             let select = document.querySelector("#profile-selector");
             if (select) {
                 select.onchange = C.handlerChangeProfile;
@@ -112,6 +113,48 @@
         };
 
         C.start();
+
+        C.handlerAddFavorite = async function (id_movie) {
+            if (!window.state.activeProfile) {
+                alert("Пожалуйста, выберите профиль!");
+                return;
+            }
+
+            let res = await DataMovie.addFavorite(window.state.activeProfile.id, id_movie);
+            if (res.success) {
+                alert("Le film a été ajouté à vos favoris.");
+            }
+        };
+
+C.handlerShowFavorites = async function () {
+            if (!window.state.activeProfile) return;
+
+            V.renderLog("Chargement des favoris...");
+            
+            const idProfile = window.state.activeProfile.id;
+            const favorites = await DataMovie.getFavorites(idProfile);
+
+            // ИСПРАВЛЕНО: используем правильный ID из твоего HTML
+            const mainContainer = document.querySelector('#main-content'); 
+
+            if (favorites.length === 0) {
+                mainContainer.innerHTML = '<h2 style="text-align:center; padding:20px;">Maintenant cette section est vide. Ajoutez des films.</h2>';
+                return;
+            }
+
+            let html = '<h2 style="padding:20px; text-align:center;">Mes Favoris</h2>';
+            
+            // Обертка для карточек (проверь класс, который используется в MovieCategory)
+            html += '<div class="movie-list" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">'; 
+
+            for (let movie of favorites) {
+                // Movie.format вернет готовую карточку
+                html += Movie.format(movie);
+            }
+
+            html += '</div>';
+            mainContainer.innerHTML = html;
+        };
 
     </script>
 </body>

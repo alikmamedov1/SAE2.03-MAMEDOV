@@ -63,21 +63,32 @@ function addMovie($name, $director, $year, $length, $description, $image, $trail
     return $res; 
 }
 
-function addProfile($name, $avatar, $age_restriction){
+function saveProfile($id, $name, $avatar, $age_restriction) {
     try {
         $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
-        
-        $sql = "INSERT INTO Profile (name, avatar, age_restriction) VALUES (:name, :avatar, :age)";
-        
-        $stmt = $cnx->prepare($sql);
-        $res = $stmt->execute([
-            ':name' => $name,
-            ':avatar' => $avatar,
-            ':age' => (int)$age_restriction 
-        ]);
-        
+        $cnx->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        if ($id > 0) {
+            $sql = "UPDATE Profile SET name = :name, avatar = :avatar, age_restriction = :age WHERE id = :id";
+            $stmt = $cnx->prepare($sql);
+            $res = $stmt->execute([
+                ':id' => $id,
+                ':name' => $name,
+                ':avatar' => $avatar,
+                ':age' => (int)$age_restriction
+            ]);
+        } else {
+            $sql = "INSERT INTO Profile (name, avatar, age_restriction) VALUES (:name, :avatar, :age)";
+            $stmt = $cnx->prepare($sql);
+            $res = $stmt->execute([
+                ':name' => $name,
+                ':avatar' => $avatar,
+                ':age' => (int)$age_restriction
+            ]);
+        }
         return $res;
     } catch (PDOException $e) {
+        error_log("DB Error: " . $e->getMessage());
         return false;
     }
 }
@@ -135,6 +146,33 @@ function getAllMoviesWithCategoryFiltered($ageLimit) {
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     } catch (PDOException $e) {
         return false;
+    }
+}
+
+function addFavorite($id_profile, $id_movie) {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        // Используем INSERT IGNORE, чтобы не было ошибки, если фильм уже в избранном
+        $sql = "INSERT IGNORE INTO Favorite (id_profile, id_movie) VALUES (:id_p, :id_m)";
+        $stmt = $cnx->prepare($sql);
+        return $stmt->execute([':id_p' => $id_profile, ':id_m' => $id_movie]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+function getFavorites($id_profile) {
+    try {
+        $cnx = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        // Выбираем все данные фильма, которые связаны с этим профилем в таблице Favorite
+        $sql = "SELECT m.* FROM Movie m 
+                INNER JOIN Favorite f ON m.id = f.id_movie 
+                WHERE f.id_profile = :id_p";
+        $stmt = $cnx->prepare($sql);
+        $stmt->execute([':id_p' => $id_profile]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
     }
 }
 
