@@ -115,10 +115,10 @@ if ( isset($_REQUEST['todo']) ){
         $data = readFeaturedMoviesController();
         break;
 
-    default: 
-        echo json_encode('[error] Unknown todo value');
-        http_response_code(400); 
-        exit();
+    case 'searchMovies':
+        $query = $_REQUEST['query'] ?? ''; 
+        $data = searchMovies($query);      
+        break;
   }
 
   /**

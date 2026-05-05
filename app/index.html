@@ -55,7 +55,7 @@
             const hasMovies = moviesGrouped && Object.keys(moviesGrouped).length > 0;
 
             if (hasMovies || (featuredMovies && featuredMovies.length > 0)) {
-              
+
                 V.renderMovieList(moviesGrouped, featuredMovies);
             } else {
                 let html = `<p class="no-movies">Aucun film disponible pour votre catégorie d'âge (${ageLimit}+).</p>`;
@@ -98,11 +98,11 @@
                 let featuredHtml = '<section class="featured-section">';
                 featuredHtml += '<h2 class="featured-title">Films mis en avant</h2>';
                 featuredHtml += '<div class="featured-list">';
-                
+
                 for (let movie of featuredMovies) {
                     featuredHtml += Movie.format(movie);
                 }
-                
+
                 featuredHtml += '</div></section>';
                 content.innerHTML += featuredHtml;
             }
@@ -139,7 +139,7 @@
             V.renderLog("Chargement des favoris...");
             const idProfile = window.state.activeProfile.id;
             const favorites = await DataMovie.getFavorites(idProfile);
-            const mainContainer = document.querySelector('#main-content'); 
+            const mainContainer = document.querySelector('#main-content');
 
             if (favorites.length === 0) {
                 mainContainer.innerHTML = '<h2 style="text-align:center; padding:20px;">Votre liste de favoris est vide.</h2>';
@@ -147,7 +147,7 @@
             }
 
             let html = '<h2 style="padding:20px; text-align:center;">Mes Favoris</h2>';
-            html += '<div class="movie-list" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">'; 
+            html += '<div class="movie-list" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">';
             for (let movie of favorites) {
                 html += Movie.format(movie, true);
             }
@@ -166,6 +166,52 @@
                 await C.handlerShowFavorites();
             } else {
                 alert("Erreur lors de la suppression.");
+            }
+        };
+
+        V.renderNavBar = function () {
+            let container = document.querySelector("#navbar-container");
+            container.innerHTML = NavBar.format(window.state.profiles, window.state.activeProfile);
+
+            const navList = container.querySelector(".navbar__list");
+
+            const searchLi = document.createElement("li");
+            searchLi.className = "navbar__search-wrapper";
+
+            const searchInput = document.createElement("input");
+            searchInput.type = "text";
+            searchInput.className = "search-box";
+            searchInput.placeholder = "Rechercher...";
+            searchInput.onkeyup = C.handlerSearch;
+
+            searchLi.appendChild(searchInput);
+            navList.appendChild(searchLi);
+
+            let select = document.querySelector("#profile-selector");
+            if (select) select.onchange = C.handlerChangeProfile;
+        };
+
+        C.handlerSearch = async function (event) {
+            const query = event.target.value.trim();
+            const main = document.querySelector("#main-content");
+
+            if (query.length > 0) {
+                V.renderLog("Recherche de : " + query);
+                const results = await DataMovie.search(query);
+
+                if (results.length > 0) {
+                    main.innerHTML = `<h2 class="category-title">Résultats pour "${query}"</h2>`;
+                    let grid = '<div class="movie-list" style="display:flex; flex-wrap:wrap; gap:20px; padding:20px;">';
+                    for (let movie of results) {
+                        grid += Movie.format(movie);
+                    }
+                    grid += '</div>';
+                    main.innerHTML += grid;
+                } else {
+                    main.innerHTML = `<h2 class="category-title">Aucun film ne correspond à "${query}"</h2>`;
+                }
+            } else {
+                C.handlerHome();
             }
         };
 

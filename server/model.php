@@ -213,6 +213,24 @@ function getFeaturedMovies() {
     }
 }
 
-
+function searchMovies($query) {
+    try {
+        $pdo = new PDO("mysql:host=".HOST.";dbname=".DBNAME.";charset=utf8", DBLOGIN, DBPWD);
+        
+        $sql = "SELECT m.*, c.name AS category_name 
+                FROM Movie m 
+                LEFT JOIN Category c ON m.id_category = c.id 
+                WHERE m.name LIKE :q";
+        
+        $stmt = $pdo->prepare($sql);
+        $search = "%" . $query . "%";
+        $stmt->execute([':q' => $search]);
+        
+        return $stmt->fetchAll(PDO::FETCH_OBJ); 
+    } catch (PDOException $e) {
+        error_log("Search Error: " . $e->getMessage());
+        return [];
+    }
+}
 
 ?>

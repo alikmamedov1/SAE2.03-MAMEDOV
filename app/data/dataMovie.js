@@ -48,4 +48,9 @@ DataMovie.requestFeaturedMovies = async function () {
     return await response.json();
 };
 
+DataMovie.search = async function(query) {
+    let response = await fetch(`${HOST_URL}/script.php?todo=searchMovies&query=${encodeURIComponent(query)}`);
+    return await response.json();
+};
+
 export { DataMovie };

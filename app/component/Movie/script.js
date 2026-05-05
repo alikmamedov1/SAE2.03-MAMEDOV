@@ -55,4 +55,5 @@ Movie.format = function (movie, isFavorite = false) {
     return html;
 };
 
+
 export { Movie };
